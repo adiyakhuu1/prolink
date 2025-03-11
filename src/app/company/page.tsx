@@ -1,9 +1,9 @@
-import Dashboard from "../account/_components/CompanyDashboard";
+import Dashboard from "../_component/CompanyDashboard";
 
-export default function CompanyPage() {
+export default function CompanyDashboard() {
     return (
         <div>
-            <Dashboard/>
+            <Dashboard />
         </div>
     )
 }

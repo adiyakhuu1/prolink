@@ -8,7 +8,7 @@ import axios from "axios";
 import { ImSpinner2 } from "react-icons/im";
 import { useRouter } from "next/navigation";
 import { responseData } from "@/lib/types";
-import GoogleSession from "./_components/google";
+import GoogleSession from "../account/_components/google";
 import { motion } from "framer-motion";
 type LoginForm = {
   email: string;

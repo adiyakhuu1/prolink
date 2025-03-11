@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import GoogleSession from "../_components/google";
+import GoogleSession from "../../account/_components/google";
 import { ImSpinner2 } from "react-icons/im";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";

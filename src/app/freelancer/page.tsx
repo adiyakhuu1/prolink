@@ -19,7 +19,7 @@ export default function Freelance() {
         if (res.data.success) {
           const filteredUsers = res.data.data.users.filter(
             (user: CustomUser) => {
-              return user.companyName;
+              return !user.companyName;
             }
           );
           setUsers(filteredUsers);

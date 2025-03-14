@@ -29,7 +29,10 @@ export async function POST(req: NextRequest) {
       id: string;
     };
 
-    const user = await prisma.user.findUnique({ where: { id: verify.id } });
+    const user = await prisma.user.findUnique({
+      where: { id: verify.id },
+      omit: { password: true },
+    });
     if (!user) {
       return CustomNextResponse(
         false,
@@ -43,13 +46,14 @@ export async function POST(req: NextRequest) {
         where: { id: verify.id },
         data: {
           skill: {
-            connect: skills,
+            set: skills,
           },
         },
         include: { skill: true },
+        omit: { password: true },
       });
       if (updateUser) {
-        return CustomNextResponse(true, "SUCCESS", "Хүсэлт амжилттай!", {
+        return CustomNextResponse(true, "SKILL_SUCCESS", "Хүсэлт амжилттай!", {
           updateUser,
         });
       }
@@ -61,9 +65,10 @@ export async function POST(req: NextRequest) {
           about,
         },
         include: { skill: true },
+        omit: { password: true },
       });
       if (updateUser) {
-        return CustomNextResponse(true, "SUCCESS", "Хүсэлт амжилттай!", {
+        return CustomNextResponse(true, "ABOUT_SUCCESS", "Хүсэлт амжилттай!", {
           updateUser,
         });
       }
@@ -77,6 +82,7 @@ export async function POST(req: NextRequest) {
         },
       },
       include: { skill: true },
+      omit: { password: true },
     });
     if (updateUser) {
       return CustomNextResponse(true, "SUCCESS", "Хүсэлт амжилттай! ", {

@@ -1,49 +1,78 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// prisma/schema.prisma
 datasource db {
-  provider  = "postgresql"
-  url  	    = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
+
 model user {
-  id String @id @default(nanoid())
-  email String @unique
-  firstName String
-  lastName String
-  birthday DateTime
-  role String
-  companyName String
-  phoneNumber String @unique
-  password String
-  pfp String
-  about String?
-  skill skill[] 
-  reviewer review[] @relation("reviewer_")
-  reviewee review[] @relation("reviewee_")
-  
+  id             String           @id @unique @default(nanoid())
+  email          String           @unique
+  firstName      String
+  lastName       String
+  birthday       DateTime
+  role           String
+  companyName    String
+  phoneNumber    String           @unique
+  password       String
+  salary         Int              @default(10000)
+  salaryType     String           @default("HOUR")
+  pfp            String
+  about          String?
+  profileViews   Int              @default(0)
+  featuredSkills featuredSkills[]
+  reviewee       review[]         @relation("reviewee_")
+  reviewer       review[]         @relation("reviewer_")
+  user_A         user[]           @relation("UserInvitations")
+  user_B         user[]           @relation("UserInvitations")
+  skill          skill[]          @relation("skillTouser")
 }
+
 model otp {
-  id String @id @default(nanoid())
-  otp Int @unique
+  id    String @id @default(nanoid())
+  otp   Int    @unique
   email String
 }
+
 model skill {
-  id String @id @default(nanoid())  
-  name String @unique
-  user user[] 
+  id             String           @id @default(nanoid())
+  name           String           @unique
+  featuredSkills featuredSkills[]
+  job            job[]            @relation("jobToskill")
+  user           user[]           @relation("skillTouser")
 }
+
+model featuredSkills {
+  id        String    @id @default(nanoid())
+  userId    String
+  skillId   String
+  detail    String
+  endedAt   DateTime?
+  present   Boolean   @default(false)
+  startedAt DateTime
+  skill     skill     @relation(fields: [skillId], references: [id])
+  user      user      @relation(fields: [userId], references: [id])
+}
+
 model review {
-  id String @id @default(nanoid())
-  reviewer user @relation("reviewer_",fields: [reviewerId], references: [id])
+  id         String @id @default(nanoid())
+  rating     Int
   reviewerId String
-  reviewee user @relation("reviewee_",fields: [revieweeId], references: [id])
   revieweeId String
+  message    String
+  reviewee   user   @relation("reviewee_", fields: [revieweeId], references: [id])
+  reviewer   user   @relation("reviewer_", fields: [reviewerId], references: [id])
+}
+
+model job {
+  id          String   @id @default(nanoid())
+  title       String
+  description String
+  experienced Boolean
+  salary      Int
+  salaryRate  String
+  postedAt    DateTime @default(now())
+  skill       skill[]  @relation("jobToskill")
 }

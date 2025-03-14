@@ -13,11 +13,14 @@ import { runInThisContext } from "node:vm";
 import { responseData } from "@/lib/types";
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
+import { Select } from "@mui/material";
 const RegisterFormSchema = z.object({
   email: z.string().email(),
   firstName: z.string().min(4),
   lastName: z.string().min(4),
   pfp: z.string().url(),
+  salary: z.number(),
+  salaryType: z.string(),
   birthday: z.date().refine(
     (value) => {
       const currentYear = new Date().getFullYear();
@@ -58,6 +61,8 @@ export default function Login() {
     role: "FREELANCER",
     companyName: "",
     phoneNumber: "",
+    salary: 10000,
+    salaryType: "HOUR",
     password: "",
     pfp: "",
   });
@@ -68,6 +73,8 @@ export default function Login() {
     birthday: false,
     role: false,
     phoneNumber: false,
+    salary: false,
+    salaryType: false,
     password: false,
     pfp: false,
   });
@@ -98,6 +105,8 @@ export default function Login() {
         lastName: false,
         birthday: false,
         role: false,
+        salary: false,
+        salaryType: false,
         phoneNumber: false,
         password: false,
         pfp: false,
@@ -110,6 +119,8 @@ export default function Login() {
         firstName: !!errors.firstName,
         lastName: !!errors.lastName,
         birthday: !!errors.birthday,
+        salary: !!errors.salary,
+        salaryType: !!errors.salaryType,
         role: !!errors.role,
         phoneNumber: !!errors.phoneNumber,
         password: !!errors.password,
@@ -117,11 +128,15 @@ export default function Login() {
       });
     }
   }, [form]);
-  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const onChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const field = event.target.name;
     const { value } = event.target;
     if (field === "birthday") {
       setForm((p) => ({ ...p, [field]: new Date(value) }));
+    } else if (field === `salary`) {
+      setForm((p) => ({ ...p, [field]: Number(value) }));
     } else {
       setForm((p) => ({ ...p, [field]: value }));
     }
@@ -208,8 +223,12 @@ export default function Login() {
                 <div>
                   <div>
                     <div className="flex flex-col justify-center items-center ">
-                      <div className="text-2xl font-semibold">
-                        Profile зураг оруулна уу!
+                      <div className="text-xl font-semibold">
+                        {!form.pfp && (
+                          <div className={` text-red-600`}>
+                            Profile зураг оруулна уу!
+                          </div>
+                        )}
                       </div>
                       <Input
                         ref={imageDiv}
@@ -234,7 +253,7 @@ export default function Login() {
                         )}
 
                         <Image
-                          src={form.pfp ? form.pfp : `/window.svg`}
+                          src={form.pfp ? form.pfp : `/images.jpeg`}
                           alt="pfp"
                           className=""
                           width={100}
@@ -360,6 +379,9 @@ export default function Login() {
                   >
                     Компаний нэр
                   </Label>
+                  <div className=" text-[#717171] text-xs">
+                    Хувь хүн бол компаний нэр оруулах шаардлагагүй
+                  </div>
                 </div>
                 <div className="relative w-full">
                   <Input
@@ -393,6 +415,52 @@ export default function Login() {
                     </div>
                   )}
                 </div>
+                <div className="relative w-full">
+                  <div className=" flex">
+                    <Input
+                      id="salary"
+                      type="number"
+                      className="rounded-none peer w-full border border-gray-300 px-3 pt-5 pb-2 text-lg focus:border-[#108A00] focus:outline-none"
+                      onChange={onChange}
+                      name="salary"
+                      value={form.salary || ""}
+                    />
+                    <select
+                      onChange={onChange}
+                      name="salaryType"
+                      defaultValue={form.salaryType}
+                      className=" border w-20"
+                    >
+                      <option value={`HOUR`}>Цаг</option>
+                      <option value={`MONTH`}>Сар</option>
+                    </select>
+                  </div>
+                  <Label
+                    htmlFor="salary"
+                    className={cn(`absolute left-3 top-1 text-gray-500 text-md transition-all 
+        peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 
+        peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-[#108A00] ${
+          form.salary && "top-1 text-[10px] text-[#108A00]"
+        }`)}
+                  >
+                    Таны цалингийн хүлээлт
+                  </Label>
+                  <div className=" text-[#717171] text-xs">
+                    <span className=" italic">оруулаагүй бол : </span> 10000/цаг
+                  </div>
+                  {form.salary ? (
+                    <div>
+                      {error.salary && (
+                        <div className="text-xs text-red-400">
+                          Цалингийн хүлээлт заавал оруулна!
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
+                </div>
+
                 <div className="relative w-full">
                   <Input
                     id="password"
